@@ -1,12 +1,11 @@
 <?php
-
-require_once 'Conf.php';
-require_once 'config.php';
-
 /**
  * RestClient
+ * 
  * Example:
- * $client = new RestCLient(...);
+ * 
+ * 	$client = new RestCLient(...);
+ *
  */
 class RestClient
 {
@@ -15,8 +14,6 @@ class RestClient
 	protected $api_user;
 	protected $api_url;
 	protected $api_version;
-
-	static protected $instance = null;
 
 	public function __construct($api_user, $api_key, $api_url, $api_version) {
 		$this->api_user = $api_user;
