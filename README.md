@@ -1,4 +1,6 @@
-LianaMailer REST CLient Examples
-=================================
+REST Client
+===========
 
-LianaMailer REST Client
+This is general REST client to use for LianaTech RESTful services.
+
+
