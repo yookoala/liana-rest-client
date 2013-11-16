@@ -7,26 +7,28 @@
  * 	$client = new RestCLient(...);
  *
  */
-class RestClient
-{
+class RestClient {
 
 	protected $api_key;
+
 	protected $api_user;
+
 	protected $api_url;
+
 	protected $api_version;
 
 	public function __construct($api_user, $api_key, $api_url, $api_version) {
 		$this->api_user = $api_user;
 		$this->api_key = $api_key;
 		$this->api_url = $api_url;
-		$this->api_version = $api_version;
+		$this->api_version = intval($api_version);
 	}
 
 	public function call($method, $args = array()) {
 		return $this->request($method, $args);
 	}
 
-	protected function sign($message) {
+	protected function sign(array $message) {
 		return hash_hmac('sha256', implode("\n", $message), $this->api_key);
 	}
 
