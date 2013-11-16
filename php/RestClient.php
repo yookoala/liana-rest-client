@@ -1,6 +1,8 @@
 <?php
+namespace LianaTech;
+
 /**
- * RestClient
+ * PHP RestClient for LianaTech RESTful services
  * 
  * Example:
  * 
@@ -35,7 +37,8 @@ class RestClient {
 	protected function request($method, $args = array()) {
 		$contents = json_encode($args);
 		$md5 = md5($contents);
-		$timestamp = date('c');
+		$datetime = new \DateTime(null, new \DateTimeZone('Europe/Helsinki'));
+		$timestamp = $datetime->format('c');
 		$type = empty($args) ? 'GET' : 'POST';
 		$url = $this->api_url . '/rest/v'. $this->api_version .'/' . $method;
 
@@ -65,9 +68,18 @@ class RestClient {
 		curl_setopt($ch, CURLOPT_POST, $type == 'POST');
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $contents);
 		$result = curl_exec($ch);
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
+
+		switch ($http_code) {
+			case 401:
+				throw new RestClientAuthorizationException;
+				break;
+		}
 
 		return $result ? json_decode($result, true) : false;
 	}
 
 }
+
+class RestClientAuthorizationException extends \Exception {} 

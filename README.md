@@ -3,6 +3,23 @@ REST Client
 
 This is general REST client in each programming language to use for LianaTech RESTful services.
 
+Usage
+=====
+
+PHP
+
+	<?php
+	require 'php/restclient.php';
+	$client = new LianaTech\RestClient(<API user>, <API key>, <API URL>, <API VERSION>);
+	try {
+		$res = $client->call('pingpong', array('ping' => 'foo'));
+	} catch (lianatech\restclientauthorizationexception $e) {
+		echo "\n\tERROR: Authorization failed\n\n";
+	} catch (exception $e) {
+		echo "\n\tERROR: " . $e->getmessage() . "\n\n";
+	}
+
+
 Development
 ===========
 
