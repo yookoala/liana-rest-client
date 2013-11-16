@@ -9,7 +9,7 @@ Usage
 PHP
 
 	<?php
-	require 'php/restclient.php';
+	require 'php/RestClient.php';
 	$client = new LianaTech\RestClient(<API_USER>, <API_KEY>, <API_URL>, <API_VERSION>);
 	try {
 		$res = $client->call('pingpong', array('ping' => 'foo'));
