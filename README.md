@@ -1,7 +1,7 @@
 REST Client
 ===========
 
-This is general REST client in each programming language to use for LianaTech RESTful services.
+REST client in each programming language to use for LianaTech RESTful services.
 
 Usage
 =====
@@ -10,10 +10,10 @@ PHP
 
 	<?php
 	require 'php/restclient.php';
-	$client = new LianaTech\RestClient(<API user>, <API key>, <API URL>, <API VERSION>);
+	$client = new LianaTech\RestClient(<API_USER>, <API_KEY>, <API_URL>, <API_VERSION>);
 	try {
 		$res = $client->call('pingpong', array('ping' => 'foo'));
-	} catch (lianatech\restclientauthorizationexception $e) {
+	} catch (LianaTech\RestClientAuthorizationException $e) {
 		echo "\n\tERROR: Authorization failed\n\n";
 	} catch (exception $e) {
 		echo "\n\tERROR: " . $e->getmessage() . "\n\n";
@@ -25,7 +25,7 @@ Development
 
 Project is using NodeJS and Grunt for simplifying development tasks.
 
-1. Install [nodejs](http://nodejs.org/)
+1. Install [NodeJS](http://nodejs.org/)
 
 2. Clone this repository (and go to folder)
 
