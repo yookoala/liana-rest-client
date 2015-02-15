@@ -11,19 +11,18 @@ namespace LianaTech;
  */
 class RestClient {
 
-	protected $api_key;
+	protected $api_key = null;
+	protected $api_user = null;
+	protected $api_url = null;
+	protected $api_version = null;
+	protected $api_realm = null;
 
-	protected $api_user;
-
-	protected $api_url;
-
-	protected $api_version;
-
-	public function __construct($api_user, $api_key, $api_url, $api_version) {
+	public function __construct($api_user, $api_key, $api_url, $api_version, $api_realm) {
 		$this->api_user = $api_user;
 		$this->api_key = $api_key;
 		$this->api_url = $api_url;
 		$this->api_version = intval($api_version);
+		$this->api_realm = $api_realm;
 	}
 
 	public function call($method, $args = array()) {
@@ -60,7 +59,7 @@ class RestClient {
 			'Content-Type: application/json',
 			"Content-MD5: {$md5}",
 			"Date: {$timestamp}",
-			"Authorization: LMUI {$user_id}:{$signature}"
+			"Authorization: {$this->api_realm} {$user_id}:{$signature}"
 		));
 		curl_setopt($ch, CURLOPT_USERAGENT, 'PHP-LMAPI');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
