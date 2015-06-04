@@ -39,7 +39,7 @@ class RestClient {
 		$datetime = new \DateTime(null, new \DateTimeZone('Europe/Helsinki'));
 		$timestamp = $datetime->format('c');
 		$type = empty($args) ? 'GET' : 'POST';
-		$url = $this->api_url . '/rest/v'. $this->api_version .'/' . $method;
+		$url = $this->api_url . '/api/v'. $this->api_version .'/' . $method;
 
 		$message = array(
 			$type,
@@ -47,7 +47,7 @@ class RestClient {
 			'application/json',
 			$timestamp,
 			$contents,
-			'/rest/v'. $this->api_version .'/' . $method
+			'/api/v'. $this->api_version .'/' . $method
 		);
 
 		$signature = $this->sign($message);
