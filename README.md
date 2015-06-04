@@ -10,7 +10,7 @@ PHP
 
 	<?php
 	require 'php/RestClient.php';
-	$client = new LianaTech\RestClient(<API_USER>, <API_KEY>, <API_URL>, <API_VERSION>);
+	$client = new LianaTech\RestClient(<API_USER>, <API_KEY>, <API_URL>, <API_VERSION>, <REALM>);
 	try {
 		$res = $client->call('pingpong', array('ping' => 'foo'));
 	} catch (LianaTech\RestClientAuthorizationException $e) {
