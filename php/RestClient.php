@@ -3,9 +3,9 @@ namespace LianaTech;
 
 /**
  * PHP RestClient for LianaTech RESTful services
- * 
+ *
  * Example:
- * 
+ *
  * 	$client = new RestCLient(...);
  *
  */
@@ -25,29 +25,28 @@ class RestClient {
 		$this->api_realm = $api_realm;
 	}
 
-	public function call($method, $args = array()) {
-		return $this->request($method, $args);
+	public function call($path, $args = array(), $method = 'POST') {
+		$args = $method !== 'GET' ? json_encode($args) : '';
+		return $this->request($path, $args, $method);
 	}
 
 	protected function sign(array $message) {
 		return hash_hmac('sha256', implode("\n", $message), $this->api_key);
 	}
 
-	protected function request($method, $args = array()) {
-		$contents = json_encode($args);
+	protected function request($path, $contents, $method) {
 		$md5 = md5($contents);
 		$datetime = new \DateTime(null, new \DateTimeZone('Europe/Helsinki'));
 		$timestamp = $datetime->format('c');
-		$type = 'POST';
-		$url = $this->api_url . '/api/v'. $this->api_version .'/' . $method;
+		$url = $this->api_url . '/api/v'. $this->api_version .'/' . $path;
 
 		$message = array(
-			$type,
+			$method,
 			$md5,
 			'application/json',
 			$timestamp,
 			$contents,
-			'/api/v'. $this->api_version .'/' . $method
+			'/api/v'. $this->api_version .'/' . $path
 		);
 
 		$signature = $this->sign($message);
@@ -64,21 +63,36 @@ class RestClient {
 		curl_setopt($ch, CURLOPT_USERAGENT, 'PHP-LMAPI');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-		curl_setopt($ch, CURLOPT_POST, $type == 'POST');
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $contents);
 		$result = curl_exec($ch);
 		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
 
+		$result = json_decode($result, true);
+
 		switch ($http_code) {
 			case 401:
 				throw new RestClientAuthorizationException;
 				break;
+			default:
+				if ($http_code >= 400) {
+					throw new APIException(sprintf(
+						'API response with status code %s %s',
+						$http_code,
+						$result['message'] ? $result['message'] : ''
+					));
+				}
 		}
 
-		return $result ? json_decode($result, true) : false;
+		if ($result === null) {
+			throw new APIException('API did not return a valid json string');
+		}
+
+		return $result;
 	}
 
 }
 
-class RestClientAuthorizationException extends \Exception {} 
+class RestClientAuthorizationException extends \Exception {}
+class APIException extends \Exception {}
