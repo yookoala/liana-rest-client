@@ -10,7 +10,7 @@ import json
 import hashlib
 import hmac
 import requests
-from datetime import datetime
+import time
 
 class APIException(Exception):
     pass
@@ -25,22 +25,23 @@ class RestClient:
         self._api_version = api_version
         self._content_type = 'application/json'
 
-    def call(self, method, params=[]):
+    def call(self, path, params=[], method='POST'):
         """ Perform API request and return the API result"""
-        self._set_request_data(method, params)
+        request_function = getattr(requests, method.lower())
+        self._set_request_data(path, params, method)
 
-        self._response = requests.post(
-            self._api_url + self._full_method,
+        self._response = request_function(
+            self._api_url + self._full_path,
             headers=self._get_headers(),
             data=self._json_string
         )
 
         self._response_body = self._response.text;
 
-        if self._response.status_code != 200:
+        if (self._response.status_code >= 400):
             raise APIException(
-                'API response with status code ' + str(self._response.status_code) + ' instead of OK (200)'
-            )
+                'API response with status code ' +str(self._response.status_code)
+             )
 
         try:
             data = json.loads(self._response_body);
@@ -49,10 +50,7 @@ class RestClient:
         except json.decoder.JSONDecodeError: # Python 3.5+
             raise APIException('API did not return a valid json string')
 
-        if not data['succeed']:
-            raise APIException(data['message'])
-
-        return data['result']
+        return data
 
     def get_http_response(self):
         """ Returns the raw response object of last performed API request """
@@ -64,7 +62,7 @@ class RestClient:
 
     def _get_new_timestamp(self):
         """ Returns a fresh timestamp in proper format """
-        return datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        return time.strftime('%Y-%m-%dT%H:%M:%S%z')
 
     def _get_hash(self):
         """ Form and return the parameters hash for the API request """
@@ -76,15 +74,14 @@ class RestClient:
     def _get_message(self):
         """ Return the message in the format which is used to create signature of the request """
         message = "\n".join([
-            'POST',
+            self._method,
             self._get_hash(),
             self._content_type,
             self._timestamp,
             self._json_string,
-            self._full_method
+            self._full_path
         ])
         return message.encode('utf-8')
-
 
     def _get_signature(self):
         """ Get signature for the API request """
@@ -105,9 +102,12 @@ class RestClient:
         }
 
 
-    def _set_request_data(self, method, params):
+    def _set_request_data(self, path, params, method):
         """ Set API request data """
-        self._full_method = '/api/v' + str(self._api_version) + '/' + method
+        self._full_path = '/api/v' + str(self._api_version) + '/' + path
         self._json_string = json.dumps(params)
+        if method == 'GET':
+			self._json_string = ''
         self._timestamp = self._get_new_timestamp()
+        self._method = method
 
