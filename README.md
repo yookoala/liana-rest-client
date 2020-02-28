@@ -46,7 +46,7 @@ Python
 		print(response.text)
 		exit(1)
 
-    print(data)
+	print(data)
 
 Development
 ===========
