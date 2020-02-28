@@ -48,8 +48,8 @@ class RestClient:
         except json.decoder.JSONDecodeError: # Python 3.5+
             raise APIException('API did not return a valid json string')
 
-		if 'succeed' in data.keys() and not data['succeed']:
-		    raise APIException(data['message'])
+        if 'succeed' in data.keys() and not data['succeed']:
+            raise APIException(data['message'])
 
         if 'result' in data.keys():
             return data['result']
