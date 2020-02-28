@@ -38,10 +38,8 @@ class RestClient:
 
         self._response_body = self._response.text;
 
-        if (self._response.status_code >= 400):
-            raise APIException(
-                'API response with status code ' +str(self._response.status_code)
-             )
+        if self._response.status_code >= 400:
+            raise APIException('API response with status code ' +str(self._response.status_code))
 
         try:
             data = json.loads(self._response_body);
@@ -49,6 +47,12 @@ class RestClient:
             raise APIException('API did not return a valid json string')
         except json.decoder.JSONDecodeError: # Python 3.5+
             raise APIException('API did not return a valid json string')
+
+		if 'succeed' in data.keys() and not data['succeed']:
+		    raise APIException(data['message'])
+
+        if 'result' in data.keys():
+            return data['result']
 
         return data
 
@@ -107,7 +111,7 @@ class RestClient:
         self._full_path = '/api/v' + str(self._api_version) + '/' + path
         self._json_string = json.dumps(params)
         if method == 'GET':
-			self._json_string = ''
+            self._json_string = ''
         self._timestamp = self._get_new_timestamp()
         self._method = method
 
