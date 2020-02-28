@@ -17,9 +17,9 @@ PHP
         echo "\n\tERROR: Authorization failed\n\n";
     } catch (LianaTech\APIException $e) {
         echo  "\n\nERROR: API exception : " . $e->getMessage() . "\n\n";
-	} catch (exception $e) {
-		echo "\n\tERROR: " . $e->getmessage() . "\n\n";
-	}
+    } catch (exception $e) {
+        echo "\n\tERROR: " . $e->getmessage() . "\n\n";
+    }
 
 Python
 
