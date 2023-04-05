@@ -9,7 +9,6 @@ from RestClient import RestClient, APIException
 class MockResponse:
     pass
 
-print(os.getcwd())
 # mockup time.strftime within RestClient to return a predetermined value
 @patch('RestClient.time', Mock(
     strftime=Mock(return_value='2018-10-20T10:11:12', call_args='%Y-%m-%dT%H:%M:%S%z')
