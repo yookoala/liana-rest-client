@@ -1,6 +1,11 @@
-test:
-	@echo "\nPHP"
-	./vendor/bin/phpunit --colors --bootstrap ./tests/php/phpunit.php ./tests/php/
+test_php:
+	@echo "\n\033[92m\033[1mPHP\033[0m\033[0m"
+	./vendor/bin/phpunit --colors --verbose --bootstrap ./tests/php/phpunit.php ./tests/php/
 
-	@echo "\nPYTHON"
-	python3 -m unittest discover tests/python/ -p '*_test.py'
+test_python:
+	@echo "\n\033[92m\033[1mPYTHON\033[0m\033[0m"
+	python3 -m unittest discover tests/python/ -p '*_test.py' -v
+
+test:
+	make test_php
+	make test_python
