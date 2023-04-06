@@ -31,7 +31,7 @@ Python
 	api_user = <API_USER_ID>
 	api_secret = <API_KEY>
 	api_url = <API_URL>
-	api_realm = <_REALM>
+	api_realm = <API_REALM>
 	api_version = <API_VERSION>
 
 	client = RestClient(api_user, api_secret, api_url, api_version, api_realm)
@@ -51,24 +51,14 @@ Python
 Development
 ===========
 
-Project is using NodeJS and Grunt for simplifying development tasks.
+1. Clone this repository (and go to folder)
 
-1. Install [NodeJS](http://nodejs.org/)
+2. [Install composer](https://github.com/composer/composer)
 
-2. Clone this repository (and go to folder)
+3. Install required PHP dependencies (it will read composer.json file)
 
-3. [Install composer](https://github.com/composer/composer)
+   `php composer.phar install`
 
-4. Install required PHP dependencies (it will read composer.json file)
+4. Running tasks (currently only unit tests)
 
-	php composer.phar install
-
-5. Install required NodeJS plugins (it will read package.json file)
-
-	npm install
-
-6. Running tasks (currently only unit tests) just execute grunt
-
-	grunt
-
-
+   `make test`

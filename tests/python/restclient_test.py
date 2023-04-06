@@ -1,16 +1,17 @@
 import sys
+import os
 import unittest
 from mock import patch, Mock
-from datetime import datetime
-sys.path.append('../../python')
+import time
+sys.path.append(os.path.dirname(__file__) + '/../../python')
 from RestClient import RestClient, APIException
 
 class MockResponse:
     pass
 
-# mockup datetime.now() within RestClient to return a predetermined value
-@patch('RestClient.datetime', Mock(
-    now=Mock(return_value=datetime(2018, 10, 20, 10, 11, 12))
+# mockup time.strftime within RestClient to return a predetermined value
+@patch('RestClient.time', Mock(
+    strftime=Mock(return_value='2018-10-20T10:11:12', call_args='%Y-%m-%dT%H:%M:%S%z')
 ))
 
 class RestClientTest(unittest.TestCase):
@@ -19,18 +20,22 @@ class RestClientTest(unittest.TestCase):
         api_secret = 'sesame'
         api_url = 'https://unit.local'
         api_realm = 'UNIT'
-        api_version = 1
-        self.apiv1 = RestClient(api_user, api_secret, api_url, api_version, api_realm)
+        self.apiv1 = RestClient(api_user, api_secret, api_url, 1, api_realm)
+        self.apiv3 = RestClient(api_user, api_secret, api_url, 3, api_realm)
 
     def test_timestamp(self):
         self.assertEqual(self.apiv1._get_new_timestamp(), '2018-10-20T10:11:12')
 
-    def test_hash(self):
-        self.apiv1._set_request_data('getStuff', [1, 'unit'])
+    def test_hash_post(self):
+        self.apiv1._set_request_data('getStuff', [1, 'unit'], 'POST')
         self.assertEqual(self.apiv1._get_hash(), '728d7c26b9d3fc42da3d518a4097da81')
 
-    def test_message(self):
-        self.apiv1._set_request_data('getStuff', [1, 'unit'])
+    def test_hash_get(self):
+        self.apiv3._set_request_data('getStuff?param1=something&param2=somethingelse', [], 'GET')
+        self.assertEqual(self.apiv3._get_hash(), 'd41d8cd98f00b204e9800998ecf8427e')
+
+    def test_message_post(self):
+        self.apiv1._set_request_data('getStuff', [1, 'unit'], 'POST')
         expected = "POST\n" \
             "728d7c26b9d3fc42da3d518a4097da81\n" \
             "application/json\n" \
@@ -40,15 +45,32 @@ class RestClientTest(unittest.TestCase):
 
         self.assertEqual(self.apiv1._get_message(), expected.encode('utf-8'))
 
-    def test_signature(self):
-        self.apiv1._set_request_data('getStuff', [1, 'unit'])
+    def test_message_get(self):
+        self.apiv3._set_request_data('getStuff?param1=something&param2=somethingelse', [], 'GET')
+        expected = "GET\n" \
+            "d41d8cd98f00b204e9800998ecf8427e\n" \
+            "application/json\n" \
+            "2018-10-20T10:11:12\n" \
+            "\n" \
+            "/api/v3/getStuff?param1=something&param2=somethingelse"
+
+        self.assertEqual(self.apiv3._get_message(), expected.encode('utf-8'))
+
+    def test_signature_post(self):
+        self.apiv1._set_request_data('getStuff', [1, 'unit'], 'POST')
         self.assertEqual(
             self.apiv1._get_signature(),
             '37aa7ce64e02cca021917606b7932eee3bec7135d1b14432d44018a4e4cc85ad'
         )
+    def test_signature_get(self):
+        self.apiv3._set_request_data('getStuff?param1=something&param2=somethingelse', [], 'GET')
+        self.assertEqual(
+            self.apiv3._get_signature(),
+            '27c82b98af8498297020fb4524e538f57d0a62df31daf72e9f5c9e07fcde30a9'
+        )
 
-    def test_headers(self):
-        self.apiv1._set_request_data('getStuff', [1, 'unit'])
+    def test_headers_post(self):
+        self.apiv1._set_request_data('getStuff', [1, 'unit'], 'POST')
         expected = {
             'Content-Type': 'application/json',
             'Content-MD5': '728d7c26b9d3fc42da3d518a4097da81',
@@ -57,6 +79,17 @@ class RestClientTest(unittest.TestCase):
         }
 
         self.assertEqual(self.apiv1._get_headers(), expected)
+
+    def test_headers_get(self):
+        self.apiv3._set_request_data('getStuff?param1=something&param2=somethingelse', [], 'GET')
+        expected = {
+            'Content-Type': 'application/json',
+            'Content-MD5': 'd41d8cd98f00b204e9800998ecf8427e',
+            'Date': '2018-10-20T10:11:12',
+            'Authorization': 'UNIT 42:27c82b98af8498297020fb4524e538f57d0a62df31daf72e9f5c9e07fcde30a9',
+        }
+
+        self.assertEqual(self.apiv3._get_headers(), expected)
 
     @patch('RestClient.requests')
     def test_call_ok(self, mock_requests):
@@ -113,7 +146,7 @@ class RestClientTest(unittest.TestCase):
         except APIException as e:
             error = str(e)
 
-        self.assertEqual(error, 'API response with status code 500 instead of OK (200)')
+        self.assertEqual(error, 'API response with status code 500')
 
 
     @patch('RestClient.requests')
