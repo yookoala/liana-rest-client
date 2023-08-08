@@ -4,11 +4,19 @@ REST client in each programming language to use for LianaTech RESTful services.
 
 ## Usage
 
-PHP
+### PHP
+
+#### Install
+
+```
+composer require "lianahq/liana-client"
+```
+
+#### Usage
 
 ```php
 <?php
-require 'php/RestClient.php';
+require './vendor/autoload.php';
 $client = new LianaTech\RestClient(<API_USER>, <API_KEY>, <API_URL>, <API_VERSION>, <REALM>);
 try {
 	$res = $client->call('pingpong', array('ping' => 'foo'), 'POST');
@@ -21,7 +29,7 @@ try {
 }
 ```
 
-Python
+### Python
 
 ```python
 import sys
