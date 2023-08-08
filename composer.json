@@ -1,5 +1,5 @@
 {
-    "name": "lianahq/rest-client",
+    "name": "lianahq/liana-client",
     "description": "REST client in each programming language to use for LianaTech RESTful services.",
     "type": "library",
     "license": "MIT",
