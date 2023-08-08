@@ -1,10 +1,8 @@
-REST Client
-===========
+# REST Client
 
 REST client in each programming language to use for LianaTech RESTful services.
 
-Usage
-=====
+## Usage
 
 PHP
 
@@ -52,8 +50,7 @@ except APIException as e:
 print(data)
 ```
 
-Development
-===========
+## Development
 
 1. Clone this repository (and go to folder)
 
