@@ -1,0 +1,32 @@
+name: Python Tests
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        experimental: [false]
+
+    steps:
+
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip' # caching pip dependencies
+
+      - name: Install Requirements
+        run: pip install -r ./python/requirements.txt
+
+      - name: Run Python test
+        run: make test_python
+        continue-on-error: ${{ matrix.experimental }}
