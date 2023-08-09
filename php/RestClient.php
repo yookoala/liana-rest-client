@@ -1,6 +1,9 @@
 <?php
 namespace LianaTech;
 
+require_once __DIR__ . '/APIException.php';
+require_once __DIR__ . '/RestClientAuthorizationException.php';
+
 /**
  * PHP RestClient for LianaTech RESTful services
  *
@@ -93,6 +96,3 @@ class RestClient {
 	}
 
 }
-
-class RestClientAuthorizationException extends \Exception {}
-class APIException extends \Exception {}
