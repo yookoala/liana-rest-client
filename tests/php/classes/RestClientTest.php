@@ -1,7 +1,5 @@
 <?php
 
-require 'RestClient.php';
-
 class Mockup_RestClient extends LianaTech\RestClient {
 	public function sign(array $msg) {
 		return parent::sign($msg);
