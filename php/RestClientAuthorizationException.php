@@ -2,7 +2,4 @@
 
 namespace LianaTech;
 
-class RestClientAuthorizationException extends \Exception
-{
-
-}
+class RestClientAuthorizationException extends \Exception {}

@@ -2,7 +2,4 @@
 
 namespace LianaTech;
 
-class APIException extends \Exception
-{
-
-}
+class APIException extends \Exception {}
